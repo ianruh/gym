@@ -86,7 +86,7 @@ class CartPoleEnv(gym.Env):
                          np.finfo(np.float32).max],
                         dtype=np.float32)
 
-        self.action_space = spaces.Discrete(2)
+        self.action_space = spaces.Box(np.array([-1.0, 0.0]), np.array([1.0, 1.0]), dtype=np.float32)
         self.observation_space = spaces.Box(-high, high, dtype=np.float32)
 
         self.seed()
@@ -104,7 +104,7 @@ class CartPoleEnv(gym.Env):
         assert self.action_space.contains(action), err_msg
 
         x, x_dot, theta, theta_dot = self.state
-        force = self.force_mag if action == 1 else -self.force_mag
+        force = self.force_mag * action[0] #if action == 1 else -self.force_mag
         costheta = math.cos(theta)
         sintheta = math.sin(theta)
 
