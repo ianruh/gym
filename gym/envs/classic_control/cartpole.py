@@ -68,26 +68,26 @@ class CartPoleEnv(gym.Env):
         self.masscart = 1.0
         self.masspole = 0.1
         self.total_mass = (self.masspole + self.masscart)
-        self.length = 0.5  # actually half the pole's length
+        self.length = 1.0 #0.5  # actually half the pole's length
         self.polemass_length = (self.masspole * self.length)
-        self.force_mag = 10.0
+        self.force_mag = 1.0
         self.tau = 0.02  # seconds between state updates
         self.kinematics_integrator = 'euler'
 
         # Angle at which to fail the episode
         self.theta_threshold_radians = 12 * 2 * math.pi / 360
-        self.x_threshold = 2.4
+        self.x_threshold = 4.8
 
         # Angle limit set to 2 * theta_threshold_radians so failing observation
         # is still within bounds.
         high = np.array([self.x_threshold * 2,
-                         np.finfo(np.float32).max,
+                         np.finfo(np.float64).max,
                          self.theta_threshold_radians * 2,
-                         np.finfo(np.float32).max],
-                        dtype=np.float32)
+                         np.finfo(np.float64).max],
+                        dtype=np.float64)
 
-        self.action_space = spaces.Box(np.array([-1.0, 0.0]), np.array([1.0, 1.0]), dtype=np.float32)
-        self.observation_space = spaces.Box(-high, high, dtype=np.float32)
+        self.action_space = spaces.Box(np.array([-1000.0, 0.0]), np.array([1000.0, 1.0]), dtype=np.float64)
+        self.observation_space = spaces.Box(-high, high, dtype=np.float64)
 
         self.seed()
         self.viewer = None
@@ -151,15 +151,16 @@ class CartPoleEnv(gym.Env):
             self.steps_beyond_done += 1
             reward = 0.0
 
-        return np.array(self.state), reward, done, {}
+        return np.array(self.state)
 
     def reset(self):
-        self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
+        # self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
+        self.state = self.np_random.uniform(low=np.array([-0.01, -0.01, -0.5, -0.01]), high=np.array([0.01, 0.01, 0.5, 0.01]))
         self.steps_beyond_done = None
         return np.array(self.state)
 
     def render(self, mode='human'):
-        screen_width = 600
+        screen_width = 1200
         screen_height = 400
 
         world_width = self.x_threshold * 2
