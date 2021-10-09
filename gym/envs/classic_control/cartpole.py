@@ -68,7 +68,7 @@ class CartPoleEnv(gym.Env):
         self.masscart = 1.0
         self.masspole = 0.1
         self.total_mass = (self.masspole + self.masscart)
-        self.length = 1.0 #0.5  # actually half the pole's length
+        self.length = 0.5  # actually half the pole's length
         self.polemass_length = (self.masspole * self.length)
         self.force_mag = 1.0
         self.tau = 0.02  # seconds between state updates
@@ -76,7 +76,7 @@ class CartPoleEnv(gym.Env):
 
         # Angle at which to fail the episode
         self.theta_threshold_radians = 12 * 2 * math.pi / 360
-        self.x_threshold = 4.8
+        self.x_threshold = 4
 
         # Angle limit set to 2 * theta_threshold_radians so failing observation
         # is still within bounds.
@@ -134,38 +134,39 @@ class CartPoleEnv(gym.Env):
             or theta > self.theta_threshold_radians
         )
 
-        if not done:
-            reward = 1.0
-        elif self.steps_beyond_done is None:
-            # Pole just fell!
-            self.steps_beyond_done = 0
-            reward = 1.0
-        else:
-            if self.steps_beyond_done == 0:
-                logger.warn(
-                    "You are calling 'step()' even though this "
-                    "environment has already returned done = True. You "
-                    "should always call 'reset()' once you receive 'done = "
-                    "True' -- any further steps are undefined behavior."
-                )
-            self.steps_beyond_done += 1
-            reward = 0.0
+        # if not done:
+        #     reward = 1.0
+        # elif self.steps_beyond_done is None:
+        #     # Pole just fell!
+        #     self.steps_beyond_done = 0
+        #     reward = 1.0
+        # else:
+        #     if self.steps_beyond_done == 0:
+        #         logger.warn(
+        #             "You are calling 'step()' even though this "
+        #             "environment has already returned done = True. You "
+        #             "should always call 'reset()' once you receive 'done = "
+        #             "True' -- any further steps are undefined behavior."
+        #         )
+        #     self.steps_beyond_done += 1
+        #     reward = 0.0
 
         return np.array(self.state)
 
     def reset(self):
         # self.state = self.np_random.uniform(low=-0.05, high=0.05, size=(4,))
-        self.state = self.np_random.uniform(low=np.array([-0.01, -0.01, -0.5, -0.01]), high=np.array([0.01, 0.01, 0.5, 0.01]))
+        self.state = self.np_random.uniform(low=np.array([-0.01, -0.01, -3.15, -0.01]), high=np.array([0.01, 0.01, -3.13, 0.01]))
+        # self.state = self.np_random.uniform(low=np.array([-0.01, -0.01, -1.5, -0.01]), high=np.array([0.01, 0.01, 1.5, 0.01]))
         self.steps_beyond_done = None
         return np.array(self.state)
 
     def render(self, mode='human'):
-        screen_width = 1200
-        screen_height = 400
+        screen_width = 800
+        screen_height = 500
 
         world_width = self.x_threshold * 2
         scale = screen_width/world_width
-        carty = 100  # TOP OF CART
+        carty = 250  # TOP OF CART
         polewidth = 10.0
         polelen = scale * (2 * self.length)
         cartwidth = 50.0
